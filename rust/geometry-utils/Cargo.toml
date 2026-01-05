@@ -1,0 +1,16 @@
+[package]
+name = "geometry-utils"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+
+[lib]
+name = "geometry_utils"
+
+[dependencies]
+ndarray.workspace = true
+nalgebra.workspace = true
+serde.workspace = true
+
+[dev-dependencies]
+approx.workspace = true

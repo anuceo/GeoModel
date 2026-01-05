@@ -1,0 +1,51 @@
+name = "GeometryNervousSystem"
+uuid = "a7f3c8d2-4e1b-4c9a-8f2d-3b5e6a7c9d1f"
+authors = ["GeoModel Team"]
+version = "0.1.0"
+
+[deps]
+# Core Julia packages
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+
+# GPU computing
+CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
+
+# Machine learning
+Flux = "587475ba-b771-5e3f-ad9e-33799f191a9c"
+Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
+Optimisers = "3bd65402-5787-11e9-1adc-39752487f4e2"
+
+# Geometry & numerics
+GeometryBasics = "5c1252a2-5f33-56bf-86c9-59e7332b4326"
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+Arpack = "7d9fca2a-8960-54d3-9f78-7d1dccf2cb97"
+IterativeSolvers = "42fd0dbc-a981-5370-80f2-aaf504508153"
+
+# Graph processing
+Graphs = "86223c79-3864-5bf0-83f7-82e725a168b6"
+MetaGraphs = "626554b9-1ddb-594c-aa3c-2596fe9399a1"
+
+# Data structures
+DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
+
+# File I/O
+FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
+JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
+HDF5 = "f67ccb44-e63f-5c2f-98bd-6dc0ccc4ba2f"
+
+# Utilities
+ProgressMeter = "92933f4c-e287-5a05-a399-4b506db050ca"
+Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
+ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
+
+# Testing
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[compat]
+julia = "1.9"
+Flux = "0.14"
+CUDA = "5"
+Zygote = "0.6"
+StaticArrays = "1"
