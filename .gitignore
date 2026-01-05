@@ -1,0 +1,41 @@
+# Julia
+Manifest.toml
+*.jl.cov
+*.jl.*.cov
+*.jl.mem
+/deps/deps.jl
+/docs/build/
+/docs/site/
+
+# Rust
+/rust/target/
+**/*.rs.bk
+Cargo.lock
+
+# Build artifacts
+/julia/lib/
+*.so
+*.dylib
+*.dll
+
+# Data and models
+/data/
+/models/
+*.h5
+*.jld2
+*.bson
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.log

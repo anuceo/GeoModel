@@ -1,0 +1,34 @@
+[workspace]
+members = [
+    "rust/nurbs-core",
+    "rust/tessellation",
+    "rust/geometry-utils"
+]
+
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["GeoModel Team"]
+license = "MIT"
+
+[workspace.dependencies]
+# Core numerics
+ndarray = "0.15"
+nalgebra = "0.32"
+rayon = "1.8"
+
+# SIMD optimization
+packed_simd_2 = "0.3"
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+bincode = "1.3"
+
+# FFI
+libc = "0.2"
+
+# Testing and benchmarking
+criterion = "0.5"
+approx = "0.5"
