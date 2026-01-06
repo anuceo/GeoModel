@@ -1,0 +1,1 @@
+/workspaces/GeoModel/target/release/libnurbs_core.rlib: /workspaces/GeoModel/rust/nurbs-core/src/basis.rs /workspaces/GeoModel/rust/nurbs-core/src/derivatives.rs /workspaces/GeoModel/rust/nurbs-core/src/ffi.rs /workspaces/GeoModel/rust/nurbs-core/src/lib.rs /workspaces/GeoModel/rust/nurbs-core/src/surface.rs

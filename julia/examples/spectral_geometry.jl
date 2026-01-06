@@ -124,7 +124,7 @@ println("Reconstructing signal from spectral coefficients...")
 k_truncate = 10
 signal_reconstructed = basis.eigenvectors[:, 1:k_truncate] * coefficients[1:k_truncate]
 
-# Compute reconstruction error
+# Compute reconstruction err or
 error = norm(signal - signal_reconstructed) / norm(signal)
 
 println("  Using $k_truncate / $n_basis coefficients")

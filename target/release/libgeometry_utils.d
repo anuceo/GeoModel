@@ -1,0 +1,1 @@
+/workspaces/GeoModel/target/release/libgeometry_utils.rlib: /workspaces/GeoModel/rust/geometry-utils/src/lib.rs /workspaces/GeoModel/rust/geometry-utils/src/matrix.rs /workspaces/GeoModel/rust/geometry-utils/src/vector.rs

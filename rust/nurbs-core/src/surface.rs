@@ -99,27 +99,30 @@ impl NURBSSurface {
 
     /// Evaluate on uniform grid (for tessellation)
     pub fn evaluate_grid(&self, u_samples: usize, v_samples: usize) -> Array3<f64> {
-        let mut grid = Array3::zeros((u_samples, v_samples, 3));
-
         let u_step = 1.0 / (u_samples - 1) as f64;
         let v_step = 1.0 / (v_samples - 1) as f64;
 
-        grid.axis_iter_mut(ndarray::Axis(0))
-            .into_par_iter()
-            .enumerate()
-            .for_each(|(i, mut row)| {
+        // Compute all (u, v) pairs for the grid
+        let indices: Vec<(usize, usize)> = (0..u_samples)
+            .flat_map(|i| (0..v_samples).map(move |j| (i, j)))
+            .collect();
+
+        // Parallel evaluation of all grid points
+        let points: Vec<[f64; 3]> = indices.par_iter()
+            .map(|&(i, j)| {
                 let u = i as f64 * u_step;
+                let v = j as f64 * v_step;
+                self.evaluate(u, v)
+            })
+            .collect();
 
-                for (j, mut elem) in row.axis_iter_mut(ndarray::Axis(0)).enumerate() {
-                    let v = j as f64 * v_step;
-                    let point = self.evaluate(u, v);
-
-                    for k in 0..3 {
-                        elem[k] = point[k];
-                    }
-                }
-            });
-
+        // Convert flat Vec<[f64; 3]> into Array3
+        let mut grid = Array3::zeros((u_samples, v_samples, 3));
+        for ((i, j), point) in indices.into_iter().zip(points.into_iter()) {
+            for k in 0..3 {
+                grid[[i, j, k]] = point[k];
+            }
+        }
         grid
     }
 
