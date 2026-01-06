@@ -92,6 +92,10 @@ The setup script will:
 4. ✓ Install Julia package dependencies
 5. ✓ Run test suite
 
+Notes:
+- If Julia is installed but not on your `PATH`, run: `JULIA_BIN=/path/to/julia ./scripts/setup_environment.sh`
+- CUDA support is **optional**. To enable it, run: `GNS_ENABLE_CUDA=1 ./scripts/setup_environment.sh`
+
 ### Manual Setup
 
 If you prefer manual installation:

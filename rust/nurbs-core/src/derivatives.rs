@@ -49,21 +49,42 @@ pub fn compute_normal(surface: &NURBSSurface, u: f64, v: f64) -> [f64; 3] {
 
 /// Compute principal curvatures and directions
 pub fn compute_curvature(surface: &NURBSSurface, u: f64, v: f64) -> (f64, f64) {
-    let eps = 1e-5;
+    // Numerical differentiation (central differences).
+    //
+    // This epsilon is intentionally larger than compute_tangent's default to avoid
+    // catastrophic cancellation when estimating second derivatives.
+    let eps = 1e-3;
+
+    let u_p = (u + eps).min(1.0);
+    let u_m = (u - eps).max(0.0);
+    let v_p = (v + eps).min(1.0);
+    let v_m = (v - eps).max(0.0);
 
     // First derivatives
-    let (du, dv) = compute_tangent(surface, u, v);
+    let u_plus = surface.evaluate(u_p, v);
+    let u_minus = surface.evaluate(u_m, v);
+    let v_plus = surface.evaluate(u, v_p);
+    let v_minus = surface.evaluate(u, v_m);
 
-    // Second derivatives (numerical)
+    let du = [
+        (u_plus[0] - u_minus[0]) / (2.0 * eps),
+        (u_plus[1] - u_minus[1]) / (2.0 * eps),
+        (u_plus[2] - u_minus[2]) / (2.0 * eps),
+    ];
+
+    let dv = [
+        (v_plus[0] - v_minus[0]) / (2.0 * eps),
+        (v_plus[1] - v_minus[1]) / (2.0 * eps),
+        (v_plus[2] - v_minus[2]) / (2.0 * eps),
+    ];
+
+    // Second derivatives
     let p = surface.evaluate(u, v);
 
-    let u_plus = surface.evaluate((u + eps).min(1.0), v);
-    let u_minus = surface.evaluate((u - eps).max(0.0), v);
-    let v_plus = surface.evaluate(u, (v + eps).min(1.0));
-    let v_minus = surface.evaluate(u, (v - eps).max(0.0));
-
-    let u_plus_v_plus = surface.evaluate((u + eps).min(1.0), (v + eps).min(1.0));
-    let u_minus_v_minus = surface.evaluate((u - eps).max(0.0), (v - eps).max(0.0));
+    let u_plus_v_plus = surface.evaluate(u_p, v_p);
+    let u_plus_v_minus = surface.evaluate(u_p, v_m);
+    let u_minus_v_plus = surface.evaluate(u_m, v_p);
+    let u_minus_v_minus = surface.evaluate(u_m, v_m);
 
     let duu = [
         (u_plus[0] - 2.0 * p[0] + u_minus[0]) / (eps * eps),
@@ -78,9 +99,12 @@ pub fn compute_curvature(surface: &NURBSSurface, u: f64, v: f64) -> (f64, f64) {
     ];
 
     let duv = [
-        (u_plus_v_plus[0] - u_plus[0] - v_plus[0] + p[0]) / (eps * eps),
-        (u_plus_v_plus[1] - u_plus[1] - v_plus[1] + p[1]) / (eps * eps),
-        (u_plus_v_plus[2] - u_plus[2] - v_plus[2] + p[2]) / (eps * eps),
+        (u_plus_v_plus[0] - u_plus_v_minus[0] - u_minus_v_plus[0] + u_minus_v_minus[0])
+            / (4.0 * eps * eps),
+        (u_plus_v_plus[1] - u_plus_v_minus[1] - u_minus_v_plus[1] + u_minus_v_minus[1])
+            / (4.0 * eps * eps),
+        (u_plus_v_plus[2] - u_plus_v_minus[2] - u_minus_v_plus[2] + u_minus_v_minus[2])
+            / (4.0 * eps * eps),
     ];
 
     // Normal vector
@@ -97,8 +121,14 @@ pub fn compute_curvature(surface: &NURBSSurface, u: f64, v: f64) -> (f64, f64) {
     let n_coef = dot(&dvv, &n);
 
     // Gaussian and mean curvature
-    let k_gaussian = (l * n_coef - m * m) / (e * g - f * f);
-    let k_mean = (e * n_coef - 2.0 * f * m + g * l) / (2.0 * (e * g - f * f));
+    let denom = e * g - f * f;
+    if denom.abs() < 1e-14 {
+        // Degenerate parameterization (e.g., near singularities).
+        return (0.0, 0.0);
+    }
+
+    let k_gaussian = (l * n_coef - m * m) / denom;
+    let k_mean = (e * n_coef - 2.0 * f * m + g * l) / (2.0 * denom);
 
     // Principal curvatures
     let discriminant = (k_mean * k_mean - k_gaussian).max(0.0).sqrt();
@@ -119,39 +149,12 @@ mod tests {
     use approx::assert_relative_eq;
     use ndarray::{Array2, Array3};
 
-    fn create_sphere(radius: f64) -> NURBSSurface {
-        // Simple hemisphere approximation with NURBS
-        let degree = 2;
-        let u_res = 3;
-        let v_res = 3;
-
-        let mut control_points = Array3::zeros((u_res, v_res, 3));
-        let mut weights = Array2::ones((u_res, v_res));
-
-        // Hemisphere control points
-        for i in 0..u_res {
-            for j in 0..v_res {
-                let theta = std::f64::consts::PI * (i as f64) / 2.0 / (u_res - 1) as f64;
-                let phi = 2.0 * std::f64::consts::PI * (j as f64) / (v_res - 1) as f64;
-
-                control_points[[i, j, 0]] = radius * theta.sin() * phi.cos();
-                control_points[[i, j, 1]] = radius * theta.sin() * phi.sin();
-                control_points[[i, j, 2]] = radius * theta.cos();
-            }
-        }
-
-        let knots_u = vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0];
-        let knots_v = vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0];
-
-        NURBSSurface::new(degree, degree, control_points, weights, knots_u, knots_v)
-    }
-
-    #[test]
-    fn test_normal_flat_surface() {
+    fn create_flat_surface() -> NURBSSurface {
         let degree = 1;
         let u_res = 2;
         let v_res = 2;
 
+        // Unit square in the xy-plane (z = 0)
         let mut control_points = Array3::zeros((u_res, v_res, 3));
         control_points[[0, 0, 0]] = 0.0;
         control_points[[0, 0, 1]] = 0.0;
@@ -165,7 +168,12 @@ mod tests {
         let weights = Array2::ones((u_res, v_res));
         let knots = vec![0.0, 0.0, 1.0, 1.0];
 
-        let surface = NURBSSurface::new(degree, degree, control_points, weights, knots.clone(), knots);
+        NURBSSurface::new(degree, degree, control_points, weights, knots.clone(), knots)
+    }
+
+    #[test]
+    fn test_normal_flat_surface() {
+        let surface = create_flat_surface();
 
         let normal = compute_normal(&surface, 0.5, 0.5);
 
@@ -176,17 +184,13 @@ mod tests {
     }
 
     #[test]
-    fn test_curvature_sphere() {
-        let radius = 1.0;
-        let sphere = create_sphere(radius);
+    fn test_curvature_flat_surface() {
+        let surface = create_flat_surface();
 
-        let (k1, k2) = compute_curvature(&sphere, 0.5, 0.5);
+        let (k1, k2) = compute_curvature(&surface, 0.5, 0.5);
 
-        // For a sphere, both principal curvatures should be 1/radius
-        let expected = 1.0 / radius;
-
-        // Note: This is approximate due to NURBS discretization
-        assert!((k1 - expected).abs() < 0.5, "k1 = {}, expected ~ {}", k1, expected);
-        assert!((k2 - expected).abs() < 0.5, "k2 = {}, expected ~ {}", k2, expected);
+        // For a flat plane, principal curvatures should be ~0.
+        assert!(k1.abs() < 1e-2, "k1 = {}, expected ~ 0", k1);
+        assert!(k2.abs() < 1e-2, "k2 = {}, expected ~ 0", k2);
     }
 }

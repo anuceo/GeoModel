@@ -1,5 +1,7 @@
 #!/bin/bash
-set -e
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 echo "=== Building Rust NURBS Kernel ==="
 echo ""
@@ -17,31 +19,41 @@ echo ""
 
 # Build in release mode
 echo "Building Rust libraries in release mode..."
-cd rust
+pushd "${ROOT_DIR}/rust" >/dev/null
 cargo build --release --workspace
 
-if [ $? -eq 0 ]; then
-    echo "✓ Rust build successful"
-else
-    echo "✗ Rust build failed"
-    exit 1
-fi
+echo "✓ Rust build successful"
 
 # Copy libraries to Julia lib directory
 echo ""
 echo "Copying libraries to julia/lib/..."
-cd ..
-mkdir -p julia/lib
+popd >/dev/null
+mkdir -p "${ROOT_DIR}/julia/lib"
 
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    cp rust/target/release/libnurbs_core.so julia/lib/ 2>/dev/null || true
-    echo "✓ Copied libnurbs_core.so"
+    if [[ -f "${ROOT_DIR}/target/release/libnurbs_core.so" ]]; then
+        cp "${ROOT_DIR}/target/release/libnurbs_core.so" "${ROOT_DIR}/julia/lib/"
+        echo "✓ Copied libnurbs_core.so"
+    else
+        echo "✗ Expected library not found: ${ROOT_DIR}/target/release/libnurbs_core.so"
+        exit 1
+    fi
 elif [[ "$OSTYPE" == "darwin"* ]]; then
-    cp rust/target/release/libnurbs_core.dylib julia/lib/ 2>/dev/null || true
-    echo "✓ Copied libnurbs_core.dylib"
+    if [[ -f "${ROOT_DIR}/target/release/libnurbs_core.dylib" ]]; then
+        cp "${ROOT_DIR}/target/release/libnurbs_core.dylib" "${ROOT_DIR}/julia/lib/"
+        echo "✓ Copied libnurbs_core.dylib"
+    else
+        echo "✗ Expected library not found: ${ROOT_DIR}/target/release/libnurbs_core.dylib"
+        exit 1
+    fi
 elif [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "win32" ]]; then
-    cp rust/target/release/nurbs_core.dll julia/lib/ 2>/dev/null || true
-    echo "✓ Copied nurbs_core.dll"
+    if [[ -f "${ROOT_DIR}/target/release/nurbs_core.dll" ]]; then
+        cp "${ROOT_DIR}/target/release/nurbs_core.dll" "${ROOT_DIR}/julia/lib/"
+        echo "✓ Copied nurbs_core.dll"
+    else
+        echo "✗ Expected library not found: ${ROOT_DIR}/target/release/nurbs_core.dll"
+        exit 1
+    fi
 fi
 
 echo ""
