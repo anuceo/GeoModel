@@ -9,6 +9,7 @@ Manifest.toml
 
 # Rust
 /rust/target/
+/target/
 **/*.rs.bk
 Cargo.lock
 
