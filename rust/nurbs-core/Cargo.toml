@@ -1,3 +1,5 @@
+[dev-dependencies]
+approx = "0.5"
 [package]
 name = "nurbs-core"
 version.workspace = true
