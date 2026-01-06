@@ -186,11 +186,14 @@ filtered = basis.eigenvectors[:, 1:10] * coefficients[1:10]
 ### Run Examples
 
 ```bash
-# Basic NURBS demonstration
-julia --project=. julia/examples/basic_nurbs.jl
-
-# Spectral geometry
-julia --project=. julia/examples/spectral_geometry.jl
+# Minimal NURBS evaluation
+julia --project=. -e '
+using GeometryNervousSystem
+cp = zeros(5,5,3); for i in 1:5, j in 1:5; cp[i,j,:] = [(i-1)/4,(j-1)/4,0.0]; end
+w = ones(5,5); k = [0,0,0,0,0.5,1,1,1,1]
+s = NURBSSurface(3,3,cp,w,k,k)
+@show evaluate(s, 0.5, 0.5)
+'
 ```
 
 ---
@@ -219,9 +222,7 @@ GeoModel/
 │   │   ├── test_nurbs.jl
 │   │   ├── test_spectral.jl
 │   │   └── test_pipeline.jl
-│   └── examples/
-│       ├── basic_nurbs.jl
-│       └── spectral_geometry.jl
+│   └── examples/                    # (removed; use library API instead)
 │
 ├── rust/                           # Rust source code
 │   ├── nurbs-core/                 # NURBS evaluation kernel

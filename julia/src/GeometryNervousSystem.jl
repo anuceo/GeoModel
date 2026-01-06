@@ -21,8 +21,18 @@ using StaticArrays
 using GeometryBasics
 using DataStructures
 
-# Re-exports
-export NURBSSurface, evaluate, evaluate_batch, evaluate_grid, compute_normal
+# Public API
+export NURBSSurface,
+       evaluate,
+       evaluate_batch,
+       evaluate_grid,
+       compute_normal,
+       compute_curvature,
+       uniform_knot_vector,
+       dimensions
+
+# Convenience exports for submodules
+export HarmonicForm, IntentGraph, TopologyGraph, SplinePatch
 
 # Core modules
 include("rust_bridge.jl")
@@ -33,6 +43,12 @@ include("representations/IntentGraph.jl")
 include("representations/HarmonicForm.jl")
 include("representations/TopologyGraph.jl")
 include("representations/SplinePatch.jl")
+
+# Bring submodules into the parent namespace so users can write `HarmonicForm.compute_*`
+using .IntentGraph
+using .HarmonicForm
+using .TopologyGraph
+using .SplinePatch
 
 # Neural models
 # include("models/IntentEncoder.jl")

@@ -29,12 +29,11 @@ function check_library()
         Rust NURBS library not found at: $NURBS_LIB
 
         Please build the Rust library first:
-            cd rust
-            cargo build --release
+            cargo build --release --workspace
 
         Then copy the library to julia/lib/:
             mkdir -p julia/lib
-            cp rust/target/release/libnurbs_core.* julia/lib/
+            cp target/release/libnurbs_core.* julia/lib/
         """)
     end
 end

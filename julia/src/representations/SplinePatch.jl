@@ -8,7 +8,8 @@ and provides utilities for export to CAD formats.
 """
 module SplinePatch
 
-using ..GeometryNervousSystem: NURBSSurface
+# We are nested under `GeometryNervousSystem`, so `..` refers to the parent module.
+using ..: NURBSSurface
 
 export PatchAssembly, add_patch!, enforce_continuity!
 
