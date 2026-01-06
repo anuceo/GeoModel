@@ -187,7 +187,9 @@ function compute_curvature(surface::NURBSSurface, u::Real, v::Real)
     return RustBridge.nurbs_curvature(surface.rust_handle, Float64(u), Float64(v))
 end
 
+
 # Utility functions
+export uniform_knot_vector
 
 """
     uniform_knot_vector(n::Int, degree::Int)

@@ -1,1 +1,1 @@
-/workspaces/GeoModel/target/release/libtessellation.rlib: /workspaces/GeoModel/rust/tessellation/src/adaptive.rs /workspaces/GeoModel/rust/tessellation/src/lib.rs /workspaces/GeoModel/rust/tessellation/src/triangulation.rs
+/workspaces/GeoModel/target/release/libtessellation.so: /workspaces/GeoModel/rust/tessellation/src/adaptive.rs /workspaces/GeoModel/rust/tessellation/src/lib.rs /workspaces/GeoModel/rust/tessellation/src/triangulation.rs

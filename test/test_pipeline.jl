@@ -59,7 +59,7 @@ using GeometryNervousSystem
         end
 
         weights = ones(u_res, v_res)
-        knots = [0, 0, 0, 1, 1, 1]
+        knots = [0.0, 0.0, 0.0, 1.0, 1.0, 1.0]
 
         surface1 = NURBSSurface(degree, degree, cp1, weights, knots, knots)
         surface2 = NURBSSurface(degree, degree, cp2, weights, knots, knots)

@@ -18,8 +18,8 @@ using LinearAlgebra
     weights = ones(u_res, v_res)
 
     # Uniform knot vectors
-    knots_u = [0, 0, 0, 0, 0.5, 1, 1, 1, 1]
-    knots_v = [0, 0, 0, 0, 0.5, 1, 1, 1, 1]
+    knots_u = [0.0, 0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0, 1.0]
+    knots_v = [0.0, 0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0, 1.0]
 
     @testset "Surface Construction" begin
         surface = NURBSSurface(degree, degree, control_points, weights, knots_u, knots_v)
@@ -107,7 +107,7 @@ end
     end
 
     weights = ones(u_res, v_res)
-    knots = [0, 0, 0, 0, 0.33, 0.67, 1, 1, 1, 1]
+    knots = [0.0, 0.0, 0.0, 0.0, 0.33, 0.67, 1.0, 1.0, 1.0, 1.0]
 
     surface = NURBSSurface(degree, degree, control_points, weights, knots, knots)
 

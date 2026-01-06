@@ -22,7 +22,7 @@ using GeometryBasics
 using DataStructures
 
 # Re-exports
-export NURBSSurface, evaluate, evaluate_batch, evaluate_grid, compute_normal
+export NURBSSurface, evaluate, evaluate_batch, evaluate_grid, compute_normal, uniform_knot_vector
 
 # Core modules
 include("rust_bridge.jl")
